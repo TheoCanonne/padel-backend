@@ -1,7 +1,9 @@
 # CLAUDE.md — Backend Padel (Spring Boot Kotlin)
 
 ## 🎯 Objectif
-API REST en Spring Boot (Kotlin) gérant le domaine métier : utilisateurs, profils, parties, participations, invitations. Les briques non-différenciantes (auth, chat, push, email) sont déléguées à des SaaS.
+
+API REST en Spring Boot (Kotlin) gérant le domaine métier : utilisateurs, profils, parties, participations, invitations.
+Les briques non-différenciantes (auth, chat, push, email) sont déléguées à des SaaS.
 
 ---
 
@@ -19,133 +21,151 @@ API REST en Spring Boot (Kotlin) gérant le domaine métier : utilisateurs, prof
 
 ---
 
-## 📦 Use Cases à implémenter
-
-### 🔐 Auth & User Management
-- [ ] **UC-AUTH-01** : Vérifier JWT (middleware Spring Security)
-- [ ] **UC-AUTH-02** : Webhook Clerk (sync user: created/updated/deleted)
-- [ ] **UC-USER-01** : Récupérer mon profil (GET /api/v1/users/me)
-- [ ] **UC-USER-02** : Supprimer mon compte - RGPD (DELETE /api/v1/users/me)
-
-### 👤 Player Profile
-- [ ] **UC-PROFILE-01** : Créer/Compléter mon profil
-- [ ] **UC-PROFILE-02** : Modifier mon profil
-- [ ] **UC-PROFILE-03** : Voir un profil joueur (avec visibilité)
-
-### 🏟️ Club (club/lieux)
-- [ ] **UC-VENUE-01** : Rechercher des lieux (DB + Google Places API)
-- [ ] **UC-VENUE-02** : Récupérer un lieu
-- [ ] **UC-VENUE-03** : Ajouter un lieu manquant
-- [ ] **UC-VENUE-04** : Lister mes lieux favoris
-- [ ] **UC-VENUE-05** : Ajouter/Retirer un favori
-
-### 🎾 Game (Partie/Créneau)
-- [ ] **UC-GAME-01** : Créer une partie (+ channel Stream Chat auto)
-- [ ] **UC-GAME-02** : Rechercher des parties (PostGIS distance + filtres niveau/date)
-- [ ] **UC-GAME-03** : Récupérer une partie (détails + participants)
-- [ ] **UC-GAME-04** : Modifier une partie (organizer only)
-- [ ] **UC-GAME-05** : Annuler une partie (notif participants)
-- [ ] **UC-GAME-06** : Lister mes parties (créées + participées)
-
-### 🙋 Participation & Candidature
-- [ ] **UC-PART-01** : Candidater à une partie (éligibilité + waitlist si complet)
-- [ ] **UC-PART-02** : Retirer ma candidature / me désister (promo waitlist)
-- [ ] **UC-PART-03** : Accepter/Refuser une candidature (organizer)
-- [ ] **UC-PART-04** : Lister les participants d'une partie
-- [ ] **UC-PART-05** : Marquer un no-show (impact réputation)
-
-### 💌 Invitation
-- [ ] **UC-INVIT-01** : Inviter un joueur (userId ou email)
-- [ ] **UC-INVIT-02** : Générer un lien d'invitation privé (token)
-- [ ] **UC-INVIT-03** : Accepter une invitation (via token)
-- [ ] **UC-INVIT-04** : Refuser une invitation
-- [ ] **UC-INVIT-05** : Lister mes invitations
-
-### 💬 Messagerie (Stream Chat)
-- [ ] **UC-CHAT-01** : Récupérer le token Stream Chat (JWT signé)
-- [ ] **UC-CHAT-02** : Créer un channel pour une partie (interne, appelé par UC-GAME-01)
-- [ ] **UC-CHAT-03** : Ajouter un membre au channel (interne, participation acceptée)
-- [ ] **UC-CHAT-04** : Modération - signaler un message
-
-### 🔔 Notifications
-- [ ] **UC-NOTIF-01** : Envoyer une notification push (service interne OneSignal)
-- [ ] **UC-NOTIF-02** : Enregistrer un device token
-- [ ] **UC-NOTIF-03** : Préférences de notifications (GET/PATCH)
-- [ ] **UC-NOTIF-04** : Centre de notifications in-app (liste + read status)
-
-### 📅 Calendrier & Rappels
-- [ ] **UC-CAL-01** : Mon agenda (parties à venir)
-- [ ] **UC-CAL-02** : Export iCal
-- [ ] **UC-CAL-03** : Envoyer rappels automatiques (CRON J-1, H-2)
-- [ ] **UC-CAL-04** : Confirmation de présence (check-in)
-
-### ⭐ Réputation & Évaluations
-- [ ] **UC-REP-01** : Évaluer un joueur après une partie
-- [ ] **UC-REP-02** : Voir les évaluations d'un joueur
-- [ ] **UC-REP-03** : Recalculer le score de réputation (interne, auto après éval)
-
-### 🚨 Signalement & Modération
-- [ ] **UC-MOD-01** : Signaler un joueur
-- [ ] **UC-MOD-02** : Signaler une partie
-- [ ] **UC-MOD-03** : Bloquer un joueur
-- [ ] **UC-MOD-04** : Lister les signalements (admin)
-- [ ] **UC-MOD-05** : Résoudre un signalement (admin: warn/suspend/dismiss)
-
-### 📊 Admin / Dashboard
-- [ ] **UC-ADMIN-01** : Stats globales (users, games, fill rate, no-show rate)
-- [ ] **UC-ADMIN-02** : Gérer les lieux (validation, fusion doublons)
-- [ ] **UC-ADMIN-03** : Logs d'activité
-
----
-
 ## 🚀 Roadmap de développement (phases)
 
 ### Phase 1 : Fondations
+
 - Setup projet (Gradle, Spring Boot, Supabase, Flyway)
 - Config Spring Security + JWT (Clerk)
 - Entités JPA : User, PlayerProfile, Venue, Game, Participation
 - UC-AUTH-01, UC-AUTH-02, UC-USER-01, UC-PROFILE-01, UC-PROFILE-02
 
-### Phase 2 : Lieux & Parties
-- UC-VENUE (recherche, ajout, favoris)
-- Intégration Google Places API
-- UC-GAME (CRUD, recherche géo PostGIS)
+### Phase 3 — Lieux (fait)
 
-### Phase 3 : Participations & Invitations
-- UC-PART (candidature, accept/decline, waitlist, no-show)
-- UC-INVIT (token, email, deep links)
-- Intégration Resend (emails)
+- API recherche lieux (autocomplete + carte). Sélection d’un lieu.
+- Fiche lieu simple. Favoris (stockage local, API plus tard).
 
-### Phase 4 : Messagerie & Notifications
-- Intégration Stream Chat (SDK serveur, channels)
-- Intégration OneSignal (push)
-- UC-NOTIF (préférences, centre notifs)
+### Phase 4 — Parties (créneau)
 
-### Phase 5 : Calendrier & Réputation
-- UC-CAL (agenda, iCal, CRON rappels)
-- UC-REP (évaluations, scoring)
+- Liste de parties avec filtres basiques (sport, date, distance).
+- Détail partie: infos, participants, candidats.
+- Création partie: form avec capacité, règles, visibilité.
 
-### Phase 6 : Modération & Admin
-- UC-MOD (signalements, blocage)
-- UC-ADMIN (stats, gestion lieux)
+### Phase 5 — Participation & Invitations
 
-### Phase 7 : Finalisation MVP
-- Tests end-to-end
-- Sentry (error tracking)
-- CI/CD (GitHub Actions → Docker → Cloud Run/Railway)
-- RGPD (UC-USER-02)
+- Candidater / se désister. Validation auto (MVP) ou manuelle.
+- Lien d’invitation (deep link), recherche joueur existant.
+
+### Phase 6 — Chat par partie
+
+- Intégration Stream Chat sur `partie/[id]/chat`.
+- Mentions & uploads légers (photos, plan d’accès).
+
+### Phase 7 — Notifications & Agenda
+
+- OneSignal: réception basique + deep links.
+- Rappels J-1 / H-2 (push). Export iCal simple.
+
+---
+
+## Fonctionnalité complètes (front & back)
+
+## 📦 Fonctionnalités cœur (par entité)
+
+### Utilisateur / Compte
+
+- Créer un compte, se connecter, se déconnecter
+- Vérification d’email
+- Mot de passe oublié / réinitialisation
+- Suppression du compte (RGPD)
+
+### Profil Joueur
+
+- Informations générales (nom, photo, bio courte)
+- Sports pratiqués (Padel, puis Tennis, Futsal, …)
+- Niveau par sport (échelle, description)
+- Spécifiques padel : position (gauche/droite/indifférent), main (droitier/gaucher)
+- Zone géographique & rayon (km)
+- Disponibilités préférées (jours/heures)
+- Visibilité du profil (public restreint / participants uniquement)
+
+### Lieu / Club
+
+- Recherche d’un lieu/club (nom, ville)
+- Sélection d’un lieu existant
+- Référencement d’un nouveau lieu absent
+- Fiche lieu : adresse, infos pratiques, sports supportés
+- Favoris (suivre un lieu)
+
+### Partie / Créneau
+
+- Créer une partie : sport, lieu, date, heure début/fin
+- Définir la capacité : solo, binôme, équipes
+- Règles d’éligibilité : niveau min/max, rayon km
+- Visibilité : public / privé (sur invitation)
+- Gestion de l’état : ouvert, complet, annulé, joué, reporté
+- Liste d’attente (promotion automatique quand une place se libère)
+- Historique des parties créées/jouées
+
+### Candidature / Participation
+
+- Candidater à une partie
+- Retirer sa candidature / se désister
+- Validation par l’organisateur (auto ou manuelle)
+- Voir la liste des participants et des candidats
+- Rappels avant la partie
+
+### Invitation
+
+- Inviter via lien privé
+- Inviter un joueur existant (recherche par nom/email)
+- Inviter par email (création de compte à la volée)
+- Gestion des invitations (envoyées, acceptées, expirées)
+
+### Messagerie (par Partie)
+
+- Fil de discussion par partie
+- Mentions de joueurs (@) et notifications associées
+- Pièces jointes légères (photo, plan d’accès)
+- Modération basique (signaler un message)
+
+### Recherche / Filtres / Matching
+
+- Rechercher des parties par : sport, date/heure, distance, niveau, capacité
+- Trier par pertinence (proximité, compatibilité de niveau, heure)
+- Sauvegarder des recherches
+- Recevoir des alertes quand un nouveau créneau correspond
+
+### Notifications
+
+- Centre de notifications (in-app)
+- Notifications push / email : invitations, candidatures, acceptations, rappels, messages
+- Préférences (activer/désactiver par type)
+
+### Calendrier & Rappels
+
+- Vue “Mon agenda”
+- Ajouter une partie à son calendrier (export iCal)
+- Rappels automatiques (J-1, H-2)
+- Confirmation de présence (check-in)
+
+### Réputation & Sécurité
+
+- Évaluations post-match (ponctualité, fair-play, niveau perçu)
+- Gestion des no-shows (impact sur réputation)
+- Signaler un joueur / bloquer un joueur
+- Historique des évaluations
+
+### Administration / Modération
+
+- Gestion des signalements (messages, profils, parties)
+- Suspension/avertissement d’utilisateurs
+- Fusion/édition de lieux en doublon
+- Tableaux de bord (activité, remplissage, no-shows)
 
 ---
 
 ## ✅ Definition of Done Backend
 
 ### Fonctionnel
+
 - Tous les use cases core implémentés et testés
 - Intégrations SaaS fonctionnelles (Clerk, Stream, OneSignal, Resend, Places)
 - Webhooks Clerk validés
 - CRON rappels testés
 
 ### Technique
+
 - Tests unitaires (>70% coverage services)
 - Tests intégration (Testcontainers) passants
 - Tests API pour happy paths + erreurs
@@ -153,6 +173,7 @@ API REST en Spring Boot (Kotlin) gérant le domaine métier : utilisateurs, prof
 - Sentry configuré
 
 ### Sécurité
+
 - JWT vérifié sur tous les endpoints privés
 - CORS configuré
 - Validation input (Bean Validation)
@@ -160,6 +181,7 @@ API REST en Spring Boot (Kotlin) gérant le domaine métier : utilisateurs, prof
 - Secrets externalisés
 
 ### Ops
+
 - Dockerfile multi-stage
 - Health checks (Spring Actuator)
 - CI/CD pipeline
